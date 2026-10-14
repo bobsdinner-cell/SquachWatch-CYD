@@ -80,7 +80,7 @@ asks the chip again.
 - [x] Touch works; the five-target calibration completes and is saved
 - [x] SD card mounts (32 GB FAT32) and the log file is created
 - [x] WiFi 2.4 + 5 GHz and BLE scanning, detections arrive (~30 fps on the main screen)
-- [ ] Brightness slider and screen dimming: not checked by eye yet
+- [x] Brightness slider works (the helper chip's PWM)
 
 A poor USB cable browned the board out mid-boot once (screen dark, board gone
 from USB); a good cable fixed it.
