@@ -1,8 +1,10 @@
 // SquachWatch case for the Waveshare ESP32-C5-Touch-LCD-2.8
 //
-// Two printed parts:
-//   back  - tub the board screws into (4x M2.5 from outside), prints floor-down
-//   bezel - front frame over the glass border, push-fits over the tub's top step
+// Two printed parts, press-fit, no screws:
+//   back  - tub; printed pins on its four posts drop into the board's M2.5
+//           holes. Prints floor-down
+//   lid   - front frame over the glass border; crush ribs inside its skirt
+//           grip the tub's top step and it clamps the board by the glass
 //
 // Board numbers are from Waveshare's dimension drawing
 // (docs.waveshare.com/ESP32-C5-Touch-LCD-2.8). Port positions along the edges
@@ -13,7 +15,7 @@
 //
 // The default part, "print", lays the tub and the lid (bezel) side by side as
 // two separate bodies, ready to slice. Or render one part:
-//   openscad -D 'part="back"' -o back.stl squachwatch_c5_28_case.scad
+//   openscad -D 'part="back"' -o squachwatch_waveshare_c5_back.stl squachwatch_waveshare_c5_case.scad
 
 part = "print"; // [print, back, bezel, assembly]
 
@@ -25,7 +27,10 @@ back_clear = 11.5;
 
 /* [Fit] */
 fit = 0.3;          // gap around the glass
-bezel_fit = 0.15;   // gap between bezel skirt and tub step (push fit)
+bezel_fit = 0.15;   // gap between lid skirt and tub step
+rib_interf = 0.2;   // crush-rib bite into the tub step (raise if loose)
+pin_d = 2.0;        // locating pins into the M2.5 holes
+pin_h = 1.3;
 wall = 2.2;
 floor_t = 2.0;
 corner_r = 4;
@@ -102,9 +107,6 @@ logo_x = 25;    // centre of the back engraving, clear of the grille
 logo_y = 22;
 logo_len = 40;  // engraving length along the back
 
-cb_d = 5.2;     // screw head counterbore
-screw_len = z_pcb_bot - floor_t + 2;
-echo(str("Screws: 4x M2.5 x ", ceil(screw_len), " mm (pan head)"));
 echo(str("Case: ", out_w, " x ", out_h, " x ", tub_h + (use_bezel ? bezel_t : 0), " mm"));
 
 module rr2d(w, h, r) offset(r = r) offset(delta = -r) square([w, h]);
@@ -136,8 +138,14 @@ module back() {
                 translate([0, 0, floor_t]) linear_extrude(tub_h) cav2d();
             }
             // standoffs
-            for (h = holes) translate([h[0], h[1], floor_t - eps])
+            for (h = holes) translate([h[0], h[1], floor_t - eps]) {
                 cylinder(d = 6, h = z_pcb_bot - floor_t + eps);
+                // pin into the board's hole, chamfered tip
+                translate([0, 0, z_pcb_bot - floor_t]) {
+                    cylinder(d = pin_d, h = pin_h - 0.4);
+                    translate([0, 0, pin_h - 0.4]) cylinder(d1 = pin_d, d2 = pin_d - 0.6, h = 0.4);
+                }
+            }
             // fill the gap under the glass overhang on the USB edge so the
             // ports sit close to the connectors
             translate([3, cav_y0 - eps, floor_t - eps])
@@ -145,12 +153,6 @@ module back() {
             if (buttons) for (y = btn_y)   // nubs on the flex tabs
                 translate([cav_x1 - 0.4, y - 1.2, z_btn - 1.2]) cube([0.4 + eps, 2.4, 2.4]);
             if (speaker) speaker_frame();
-        }
-
-        // screw holes + counterbores
-        for (h = holes) translate([h[0], h[1], -1]) {
-            cylinder(d = 2.8, h = z_pcb_bot + 2);
-            cylinder(d = cb_d, h = 1 + 2.0);
         }
 
         // USB-C: through hole + recess for the plug's overmold
@@ -233,11 +235,32 @@ module bezel() {
             translate([0, 0, z_glass]) linear_extrude(bezel_t) outer2d();
             translate([0, 0, z_glass - skirt_h]) linear_extrude(skirt_h + eps)
                 difference() { outer2d(); outer2d(skirt_t); }
+            crush_ribs();
         }
+        // pry notch on the plain left side, for getting the lid off
+        translate([out_x0 - 1, out_y0 + out_h / 2 - 5, z_glass - skirt_h - 1]) cube([skirt_t + 2, 10, 2.2]);
         hull() {
             translate([0, 0, z_glass - eps]) linear_extrude(eps) win2d(0);
             translate([0, 0, z_glass + bezel_t]) linear_extrude(eps * 2) win2d(bezel_t * 0.8);
         }
+    }
+}
+
+// vertical ribs inside the lid's skirt; they bite into the tub's step
+module crush_ribs() {
+    rh = bezel_fit + rib_interf;
+    z0 = z_glass - skirt_h + 0.8;            // lead-in below the ribs
+    ix0 = out_x0 + skirt_t;  ix1 = out_x1 - skirt_t;
+    iy0 = out_y0 + skirt_t;  iy1 = out_y0 + out_h - skirt_t;
+    for (f = [0.25, 0.5, 0.75]) {            // long sides
+        y = iy0 + (iy1 - iy0) * f;
+        translate([ix0 - eps, y - 0.5, z0]) cube([rh + eps, 1, z_glass - z0 + eps]);
+        translate([ix1 - rh, y - 0.5, z0]) cube([rh + eps, 1, z_glass - z0 + eps]);
+    }
+    for (f = [1 / 3, 2 / 3]) {               // short sides
+        x = ix0 + (ix1 - ix0) * f;
+        translate([x - 0.5, iy0 - eps, z0]) cube([1, rh + eps, z_glass - z0 + eps]);
+        translate([x - 0.5, iy1 - rh, z0]) cube([1, rh + eps, z_glass - z0 + eps]);
     }
 }
 

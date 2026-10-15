@@ -1,14 +1,15 @@
 # Case: Waveshare ESP32-C5-Touch-LCD-2.8
 
-Two-part printed case (tub + separate lid) for the [Waveshare build](../../docs/WAVESHARE-C5-28.md).
-Outside size is 55.5 × 78 × 21 mm.
+A two-part, **press-fit** printed case (tub + separate lid) for the
+[Waveshare build](../../docs/WAVESHARE-C5-28.md). It needs no screws or other
+hardware. Outside size is 55.5 × 78 × 21 mm.
 
 | File | What |
 |---|---|
-| `squachwatch_c5_28_case.scad` | Parametric source (OpenSCAD 2021+) |
-| `print_plate.stl` | Both parts side by side as separate pieces, ready to slice |
-| `back.stl` | Just the tub the board screws into. Print floor-down, no supports |
-| `bezel.stl` | Just the lid (front frame over the glass border). Print face-down, no supports |
+| `squachwatch_waveshare_c5_case.scad` | Parametric source (OpenSCAD 2021+) |
+| `squachwatch_waveshare_c5_print_plate.stl` | Tub and lid side by side as separate pieces, ready to slice |
+| `squachwatch_waveshare_c5_back.stl` | Just the tub. Print floor-down, no supports |
+| `squachwatch_waveshare_c5_lid.stl` | Just the lid (front frame over the glass border). Print face-down, no supports |
 
 ![assembly](preview_assembly.png)
 
@@ -18,14 +19,14 @@ Outside size is 55.5 × 78 × 21 mm.
 
 ## What it has
 
-- The board screws in from the back with **4 × M2.5 × 14 mm pan-head screws**, into the board's M2.5 corner holes (41 × 60 mm pattern).
+- **Press-fit, no screws.** Printed pins on the tub's four posts drop into the board's M2.5 corner holes (41 × 60 mm pattern). The lid's skirt slides over a step at the top of the tub, crush ribs inside it grip, and the lid clamps the board down by the glass. A pry notch on the plain left side lets you get the lid off again without damage.
 - **USB-C** cutout, with a recess so the plug's overmold can reach the port.
 - **I2C** and **UART** SH1.0 header openings on the same edge (`io_ports`).
 - **TF card** slot with a finger scoop on the right edge (`sd_slot`).
 - **PWR / RST / BOOT** are flex tabs cut into the right wall. Each has a raised round pad outside, a nub inside that presses the side button, and its name engraved underneath (`buttons`, `button_labels`).
 - **SQUACHWATCH** is engraved on the back under the speaker grille (`logo`; set it to `""` to leave it off).
 - A pocket and grille for the **28 × 19 × 7 mm speaker**, which lies face-down on the floor under the top half of the board (`speaker`).
-- Pin-holes for the PWR and charge LEDs (`led_holes`). Their positions are approximate.
+- Light holes for the board's PWR and charge LEDs, which sit on its back by the USB-C (`led_holes`). Their positions are approximate.
 - Under the bottom half of the board there's about 11 mm of free height, room for a flat LiPo of roughly 35 × 30 × 5 mm or smaller. It plugs into the MX1.25 BAT connector.
 
 ## Before printing: measure two numbers
@@ -33,18 +34,20 @@ Outside size is 55.5 × 78 × 21 mm.
 Everything came from Waveshare's dimension drawing, but that drawing doesn't give
 the board's thickness. Check these with calipers and set them at the top of the `.scad`:
 
-- `lcd_stack`: from the PCB's front face to the glass front. The default is 4.6 mm. If it's off, the bezel either sits loose or won't seat.
+- `lcd_stack`: from the PCB's front face to the glass front. The default is 4.6 mm. If it's off, the lid either won't clamp the board or won't seat.
 - `back_clear`: from the floor to the PCB back. The default is 11.5 mm, which leaves room for the speaker plus the parts on the PCB back. Without the speaker or a battery you can drop it to about 6.
 
 The port positions along the edges were scaled from that drawing (±0.5 mm). If a
 cutout is off, change `usb_x`, `uart_x`, `i2c_x`, `sd_y` or `btn_y`.
 
+**Lid fit:** `rib_interf` (0.2 mm) is how hard the crush ribs grip. Raise it if the lid is loose, lower it if it won't go on. Only the lid changes.
+
 ## Build
 
 ```bash
-openscad -o print_plate.stl squachwatch_c5_28_case.scad
-openscad -D 'part="back"'  -o back.stl  squachwatch_c5_28_case.scad
-openscad -D 'part="bezel"' -o bezel.stl squachwatch_c5_28_case.scad
+openscad -o squachwatch_waveshare_c5_print_plate.stl squachwatch_waveshare_c5_case.scad
+openscad -D 'part="back"'  -o squachwatch_waveshare_c5_back.stl squachwatch_waveshare_c5_case.scad
+openscad -D 'part="bezel"' -o squachwatch_waveshare_c5_lid.stl  squachwatch_waveshare_c5_case.scad
 ```
 
 The default part, `print`, renders the tub and the lid as two separate bodies, so OpenSCAD's F6 then Export STL gives you a ready plate. `part="assembly"` shows everything exploded with a mock board; it's for looking, not printing.
@@ -52,7 +55,7 @@ The default part, `print`, renders the tub and the lid as two separate bodies, s
 ## Assembly
 
 1. Put the speaker face-down in its pocket, then plug it into the Speaker header. If you use a battery, stick it to the floor below the speaker with foam tape and plug it into BAT.
-2. Lower the board in, screen up, and screw it down from the back.
-3. Press the bezel on. If it's loose, a few dots of glue on the step hold it. If it's too tight, raise `bezel_fit`.
+2. Lower the board in, screen up, so the four pins drop into its corner holes.
+3. Press the lid straight down until it sits flush. To open it, put a fingernail or a flat tool in the pry notch and lift.
 
 Print in PLA or PETG with 0.2 mm layers and 3 walls. For the flex tabs, PETG springs back better.
