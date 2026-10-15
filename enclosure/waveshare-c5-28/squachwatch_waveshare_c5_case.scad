@@ -50,7 +50,7 @@ io_ports = true;    // I2C + UART SH1.0 connectors on the USB edge
 sd_slot = true;
 buttons = true;     // flex tabs for BOOT / RST / BAT_PWR
 led_holes = true;   // PWR + charge LEDs on the PCB back (approximate)
-speaker = true;     // pocket + grille for the 28 x 19 x 7 speaker
+speaker = true;     // pocket + grille for the 30 x 19 x 7 speaker
 
 /* [Lettering] */
 button_labels = true;   // BOOT / RST / PWR engraved under the flex tabs
@@ -58,7 +58,7 @@ logo = "SQUACHWATCH";   // engraved on the back; "" for none
 logo_size = 4.6;
 
 /* [Speaker] */
-spk_l = 28;
+spk_l = 30;   // measured: the speaker is ~2 mm longer than its listed 28
 spk_w = 19;
 spk_d = 7;
 spk_center = [25, 54];

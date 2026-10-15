@@ -25,7 +25,7 @@ hardware. Outside size is 55.5 × 78 × 21 mm.
 - **TF card** slot with a finger scoop on the right edge (`sd_slot`).
 - **PWR / RST / BOOT** are flex tabs cut into the right wall. Each has a raised round pad outside, a nub inside that presses the side button, and its name engraved underneath (`buttons`, `button_labels`).
 - **SQUACHWATCH** is engraved on the back under the speaker grille (`logo`; set it to `""` to leave it off).
-- A pocket and grille for the **28 × 19 × 7 mm speaker**, which lies face-down on the floor under the top half of the board (`speaker`).
+- A pocket and grille for the **30 × 19 × 7 mm speaker**, which lies face-down on the floor under the top half of the board (`speaker`).
 - Light holes for the board's PWR and charge LEDs, which sit on its back by the USB-C (`led_holes`). Their positions are approximate.
 - Under the bottom half of the board there's about 11 mm of free height, room for a flat LiPo of roughly 35 × 30 × 5 mm or smaller. It plugs into the MX1.25 BAT connector.
 
