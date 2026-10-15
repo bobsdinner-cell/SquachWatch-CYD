@@ -24,6 +24,9 @@ part = "print"; // [print, back, bezel, assembly]
 lcd_stack = 4.6;
 // Floor top -> PCB back face. Needs room for speaker (7) + parts on the PCB back (~3.5)
 back_clear = 11.5;
+// The board's own brass posts on its back corners; the case's posts stop this
+// far short of the PCB so the brass posts sit on them (measured on a board)
+board_post_h = 3.5;
 
 /* [Fit] */
 fit = 0.3;          // gap around the glass
@@ -93,6 +96,7 @@ out_x1 = out_x0 + out_w;
 z_pcb_bot = floor_t + back_clear;
 z_pcb_top = z_pcb_bot + pcb_t;
 z_glass = z_pcb_top + lcd_stack;
+z_post_top = z_pcb_bot - board_post_h;       // top of the case's posts
 tub_h = use_bezel ? z_glass : z_glass + 0.6;
 step = skirt_t + bezel_fit;
 
@@ -139,9 +143,9 @@ module back() {
             }
             // standoffs
             for (h = holes) translate([h[0], h[1], floor_t - eps]) {
-                cylinder(d = 6, h = z_pcb_bot - floor_t + eps);
-                // pin into the board's hole, chamfered tip
-                translate([0, 0, z_pcb_bot - floor_t]) {
+                cylinder(d = 6, h = z_post_top - floor_t + eps);
+                // pin up into the board's brass post, chamfered tip
+                translate([0, 0, z_post_top - floor_t]) {
                     cylinder(d = pin_d, h = pin_h - 0.4);
                     translate([0, 0, pin_h - 0.4]) cylinder(d1 = pin_d, d2 = pin_d - 0.6, h = 0.4);
                 }
@@ -269,6 +273,10 @@ module board() {
     color("#1a1a1a") translate([0, 0, z_pcb_bot]) difference() {
         cube([pcb_w, pcb_h, pcb_t]);
         for (h = holes) translate([h[0], h[1], -1]) cylinder(d = 2.7, h = 4);
+    }
+    color("#b08d57") for (h = holes) translate([h[0], h[1], z_post_top]) difference() {
+        cylinder(d = 4.5, h = board_post_h, $fn = 6);
+        translate([0, 0, -1]) cylinder(d = 2.5, h = board_post_h + 2);
     }
     color("#222") translate([glass_x0, glass_y0, z_pcb_top + 0.2])
         linear_extrude(lcd_stack - 0.2) rr2d(glass_w, glass_h, glass_r);
