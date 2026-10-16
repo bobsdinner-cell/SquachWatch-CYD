@@ -40,7 +40,7 @@ the board's thickness. Check these with calipers and set them at the top of the 
 The port positions along the edges were scaled from that drawing (±0.5 mm). If a
 cutout is off, change `usb_x`, `uart_x`, `i2c_x`, `sd_y` or `btn_y`.
 
-**Board posts:** `board_post_h` (3.5 mm, measured on a board) is how tall the board's own brass posts are. The tub's posts are that much shorter than the gap under the PCB. If the glass sits proud of the tub or below its top, measure the brass posts and change this.
+**Board posts:** `board_post_h` (6.0 mm, worked out from two test prints) is how tall the board's own brass posts are. The tub's posts are that much shorter than the gap under the PCB. If the glass sits proud of the tub or below its top, measure the brass posts and change this.
 
 **Lid fit:** `rib_interf` (0.2 mm) is how hard the crush ribs grip. Raise it if the lid is loose, lower it if it won't go on. Only the lid changes.
 
