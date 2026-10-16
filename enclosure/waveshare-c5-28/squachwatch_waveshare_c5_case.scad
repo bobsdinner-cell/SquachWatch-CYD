@@ -25,8 +25,8 @@ lcd_stack = 4.6;
 // Floor top -> PCB back face. Needs room for speaker (7) + parts on the PCB back (~3.5)
 back_clear = 11.5;
 // The board's own brass posts on its back corners; the case's posts stop this
-// far short of the PCB so the brass posts sit on them (measured on a board)
-board_post_h = 3.5;
+// far short of the PCB so the brass posts sit on them (from two test prints)
+board_post_h = 6.0;
 
 /* [Fit] */
 fit = 0.3;          // gap around the glass
