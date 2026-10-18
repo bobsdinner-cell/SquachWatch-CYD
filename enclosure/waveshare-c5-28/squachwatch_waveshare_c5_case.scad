@@ -59,7 +59,7 @@ logo_size = 4.6;
 
 /* [Speaker] */
 spk_l = 30;   // measured: the speaker is ~2 mm longer than its listed 28
-spk_w = 19;
+spk_w = 20;   // 19 measured; PLA has no give, so 1 mm of room (2026-10-18)
 spk_d = 7;
 spk_center = [25, 54];
 
