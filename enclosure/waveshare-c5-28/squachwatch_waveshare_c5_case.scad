@@ -52,6 +52,18 @@ buttons = true;     // flex tabs for BOOT / RST / BAT_PWR
 led_holes = true;   // PWR + charge LEDs on the PCB back (approximate)
 speaker = true;     // pocket + grille for the 30 x 19 x 7 speaker
 
+/* [GPS bay] */
+// An M5Stack Unit GPS v1.1 in a bay past the top of the screen (the end with
+// no ports), label up under the lid, which holds it down. The case grows
+// longer for the bay and wider on the plain left side for its Grove plug;
+// that strip beside the board carries the wires to the 12-pin (IO3, 3V3,
+// GND). Measured 2026-10-18: about 49 x 25 x 8.5, the plug 5-6 mm proud.
+gps_bay = false;
+gps_l = 50;       // the unit's length, plus room (PLA has no give)
+gps_w = 26;
+gps_t = 9.5;
+gps_plug = 9;     // the plug, and room for its wires to turn down
+
 /* [Lettering] */
 button_labels = true;   // BOOT / RST / PWR engraved under the flex tabs
 logo = "SQUACHWATCH";   // engraved on the back; "" for none
@@ -86,8 +98,10 @@ sd_y = 30.0;                                 // TF slot centre (right edge)
 leds = [[32.6, 5.1], [17.6, 5.1]];           // PWR, charge
 
 // ---- derived ----
-cav_x0 = glass_x0 - fit;  cav_y0 = glass_y0 - fit;
-cav_w = glass_w + 2 * fit; cav_h = glass_h + 2 * fit;
+gps_x_ext = gps_bay ? max(0, gps_l + gps_plug - (glass_w + 2 * fit)) : 0;   // extra width, left side
+gps_y_ext = gps_bay ? 1 + gps_w + 2 * fit : 0;                            // extra length, top end
+cav_x0 = glass_x0 - fit - gps_x_ext;  cav_y0 = glass_y0 - fit;
+cav_w = glass_w + 2 * fit + gps_x_ext; cav_h = glass_h + 2 * fit + gps_y_ext;
 cav_x1 = cav_x0 + cav_w;
 out_x0 = cav_x0 - wall;   out_y0 = cav_y0 - wall;
 out_w = cav_w + 2 * wall; out_h = cav_h + 2 * wall;
@@ -157,6 +171,7 @@ module back() {
             if (buttons) for (y = btn_y)   // nubs on the flex tabs
                 translate([cav_x1 - 0.4, y - 1.2, z_btn - 1.2]) cube([0.4 + eps, 2.4, 2.4]);
             if (speaker) speaker_frame();
+            if (gps_bay) gps_platform();
         }
 
         // USB-C: through hole + recess for the plug's overmold
@@ -196,6 +211,22 @@ module back() {
     if (buttons) for (y = btn_y)
         translate([cav_x1 + tab_t - eps, y, z_btn]) rotate([0, 90, 0])
             cylinder(d1 = 4.6, d2 = 3.8, h = wall - tab_t + 0.6 + eps);
+}
+
+// The GPS bay: a block the unit sits on, its top just under the lid so the
+// lid holds it, with a 1 mm recess that keeps it from sliding. The plug end
+// faces left, over the strip where its wires drop to the floor.
+gps_y0 = glass_y0 + glass_h + fit + 1;            // the bay's near edge
+gps_x0 = cav_x0 + gps_plug;                       // the unit's plug end
+gps_z_top = z_glass - gps_t + 1 - 0.2;            // block top; the recess takes 1
+module gps_platform() {
+    difference() {
+        translate([gps_x0 - 1, gps_y0, floor_t - eps])
+            cube([gps_l + 1, gps_w + 2 * fit, gps_z_top - floor_t + eps]);
+        translate([gps_x0, gps_y0 + fit, gps_z_top - 1]) cube([gps_l, gps_w, 2]);
+        // hollow underneath: less plastic, same height
+        translate([gps_x0 + 3, gps_y0 + 3, -1]) cube([gps_l - 6, gps_w + 2 * fit - 6, gps_z_top - 2.5 + 1]);
+    }
 }
 
 // U-slot through the right wall, hinge at the bottom, tab thinned outside
@@ -247,6 +278,11 @@ module bezel() {
             translate([0, 0, z_glass - eps]) linear_extrude(eps) win2d(0);
             translate([0, 0, z_glass + bezel_t]) linear_extrude(eps * 2) win2d(bezel_t * 0.8);
         }
+        // GPS over the bay, reading right way up with the screen
+        if (gps_bay)
+            translate([gps_x0 + gps_l / 2, gps_y0 + fit + gps_w / 2, z_glass + bezel_t - 0.5])
+                linear_extrude(1) text("GPS", size = 9, halign = "center", valign = "center",
+                                       font = "Liberation Sans:style=Bold");
     }
 }
 
@@ -284,6 +320,8 @@ module board() {
     color("silver") port_y(usb_x, z_usb, 8.9, 3.2, -0.3, 7);
     if (speaker) color("#666") translate([spk_center[0] - spk_l / 2, spk_center[1] - spk_w / 2, floor_t])
         cube([spk_l, spk_w, spk_d]);
+    if (gps_bay) color("white") translate([gps_x0 + 0.5, gps_y0 + fit + 0.5, gps_z_top - 1])
+        cube([gps_l - 1, gps_w - 1, gps_t - 1]);
 }
 
 module bezel_print() translate([0, 0, z_glass + bezel_t]) rotate([180, 0, 0]) bezel();

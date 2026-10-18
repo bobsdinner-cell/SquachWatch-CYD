@@ -10,6 +10,7 @@ hardware. Outside size is 55.5 × 78 × 21 mm.
 | `squachwatch_waveshare_c5_print_plate.stl` | Tub and lid side by side as separate pieces, ready to slice |
 | `squachwatch_waveshare_c5_back.stl` | Just the tub. Print floor-down, no supports |
 | `squachwatch_waveshare_c5_lid.stl` | Just the lid (front frame over the glass border). Print face-down, no supports |
+| `squachwatch_waveshare_c5_gps_bay_*.stl` | The same three, with a bay for an M5Stack Unit GPS (see below) |
 
 ![assembly](preview_assembly.png)
 
@@ -52,6 +53,9 @@ openscad -D 'part="back"'  -o squachwatch_waveshare_c5_back.stl squachwatch_wave
 openscad -D 'part="bezel"' -o squachwatch_waveshare_c5_lid.stl  squachwatch_waveshare_c5_case.scad
 ```
 
+With `-D gps_bay=true` the same commands give the GPS bay version (save them
+as `squachwatch_waveshare_c5_gps_bay_*.stl`).
+
 The default part, `print`, renders the tub and the lid as two separate bodies, so OpenSCAD's F6 then Export STL gives you a ready plate. `part="assembly"` shows everything exploded with a mock board; it's for looking, not printing.
 
 ## Assembly
@@ -61,3 +65,20 @@ The default part, `print`, renders the tub and the lid as two separate bodies, s
 3. Press the lid straight down until it sits flush. To open it, put a fingernail or a flat tool in the pry notch and lift.
 
 Print in PLA or PETG with 0.2 mm layers and 3 walls. For the flex tabs, PETG springs back better.
+
+## GPS bay version
+
+For the GPS build (`waveshare-c5-28-gps`) with an **M5Stack Unit GPS v1.1**
+inside instead of on a cable:
+
+- The case grows **28 mm longer** at the end with no ports (past the top of
+  the screen) and **8 mm wider** on the plain left side: 63.4 x 105.7 x 20.9 mm.
+- The GPS sits on a block in the bay, **label up, plug to the left**, its top
+  just under the lid, so the lid holds it down. Only the lid's 1.2 mm is
+  between its antenna and the sky; "GPS" is engraved over it.
+- Its wires drop from the plug into the strip beside the board and run to
+  the 12-pin connector: the GPS's TX to **IO3**, **3V3**, **GND**.
+- Bay sizes are parameters (`gps_l`, `gps_w`, `gps_t`, `gps_plug`), set for
+  a unit measured at about 49 x 25 x 8.5 mm with its plug 5-6 mm proud.
+
+![GPS bay](preview_gps_bay_assembly.png)
