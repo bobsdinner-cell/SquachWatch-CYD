@@ -382,6 +382,7 @@ static void drawCrashCard(TFT_eSPI& t) {
 #include "signatures.h"
 #include "ota_core.h"
 #include "ota_ble.h"
+#include "home_sync.h"
 #include "ota_wifi.h"
 #include "ui_update.h"
 #include "ui_wifipass.h"
@@ -6218,6 +6219,8 @@ void loop() {
     OtaCore::tick(now);
     OtaBle::tick(now);
     OtaWifi::tick(now);
+    HomeSync::tick(now, state == AppState::CLEAR && !Security::locked() &&
+                        OtaWifi::state() == OtaWifi::State::OFF, engine);
     if (state == AppState::CLEAR) {
         const char* sub = nullptr;
         bool good = false;
