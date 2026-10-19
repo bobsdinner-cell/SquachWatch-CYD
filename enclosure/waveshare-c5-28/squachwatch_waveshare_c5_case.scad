@@ -48,7 +48,6 @@ window_margin = 0.5;// extra window beyond the active area, each side
 /* [Openings] */
 io_ports = true;    // I2C + UART SH1.0 connectors on the USB edge
 sd_slot = true;
-sd_open_w = 14;     // the slot's width: the card is 11, plus room for a finger
 buttons = true;     // flex tabs for BOOT / RST / BAT_PWR
 led_holes = true;   // PWR + charge LEDs on the PCB back (approximate)
 speaker = true;     // pocket + grille for the 30 x 19 x 7 speaker
@@ -183,16 +182,13 @@ module back() {
             port_y(x, z_io, 8.5, 4.5, out_y0 - 1, 0, 1);
 
         if (sd_slot) {
+            translate([cav_x1 - 1, sd_y - 6.5, z_sd - 1.5]) cube([wall + 2, 13, 3]);
             // The card is push-pull, no spring, and sits at the board's
-            // edge: the slot runs up to the top of the tub so the board
-            // lifts out with a card in, and the card can be pinched from
-            // the side (2026-10-19; the closed slot trapped both).
-            translate([cav_x1 - 1, sd_y - sd_open_w / 2, z_sd - 1.5]) cube([wall + 2, sd_open_w, tub_h - z_sd + 3]);
-            // thumb notch: a scoop in the outside of the wall, below and
-            // around the card, for a fingernail behind its edge
-            translate([out_x1 + 2.6, sd_y, z_sd - 0.5]) scale([1, 2.0, 1.1]) sphere(r = 4.8);
+            // edge: a shallow scooped recess in the outside of the wall,
+            // around the slot and wider than it, so a thumb can reach the
+            // card's edge. 1.7 deep -- the wall stays whole beside the slot.
+            translate([out_x1 + 5 - 1.7, sd_y, z_sd]) scale([1, 1.6, 1.1]) sphere(r = 5);
         }
-
         if (buttons) for (y = btn_y) flex_tab_cut(y);
 
         // names engraved in the wall under each tab, reading along the side
