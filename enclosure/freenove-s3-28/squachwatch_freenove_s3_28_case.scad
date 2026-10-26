@@ -124,7 +124,7 @@ step = skirt_t + bezel_fit;
 
 z_usb = z_pcb_bot - 1.6;
 z_io = z_pcb_bot - 1.6;
-z_sd = z_pcb_bot - 1.0;
+z_sd = z_pcb_bot - 0.5;    // 0.5 nearer the face than first drawn (a print, 2026-10-26)
 
 // paperclip guide: hole through the floor, tube up to just under the switch
 clip_d = 1.6;                         // a standard paperclip is ~1 mm
@@ -195,6 +195,18 @@ module back() {
         }
 
         if (gps_bay) {
+            // 2 mm more room across for the unit, its plug and wires: the side
+            // walls thinned 1 mm inside at the GPS end only, so the board's
+            // side ports stay against the wall (too tight, 2026-10-26)
+            translate([0, 0, floor_t]) linear_extrude(tub_h - skirt_h - 0.6 - floor_t)
+                intersection() {
+                    offset(delta = 1) cav2d();
+                    translate([gps_x0 - 0.2, cav_y0 - 2]) square([cav_x0 + cav_l - gps_x0 + 0.2, cav_w + 4]);
+                }
+            // a groove in the corner post by the SD side, facing the corner,
+            // for the GPS wires; its top stays whole under the board
+            translate([holes[3][0], holes[3][1], floor_t - eps]) rotate(45)
+                translate([1.9, -2, 0]) cube([4, 4, z_pcb_bot - floor_t - 2]);
             // the cable's way back in, just below the UART opening
             port_y(uart_x, z_io - 6.5, 8.0, 5.0, cav_y1 - 1, out_y1 + 1, 2);
         }
